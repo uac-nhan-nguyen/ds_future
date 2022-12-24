@@ -3,30 +3,24 @@ import 'dart:async';
 class Queue<T> {
   final int limit;
   int _currentRunningJobs = 0;
-  final List<_Job<T>> _queueJobs = [];
+  final List<JobFunction<T>> _queueJobs;
   final Completer<List<T>> _completer = Completer();
-  final List<T> _results = [];
+  final Map<int, T> _results = {};
 
   Queue({
-    this.limit = 40,
-    Iterable<JobFunction<T>> jobs = const [],
-  }) {
-    addAll(jobs.toList());
-  }
-
-  void addAll(List<JobFunction<T>> jobs) {
-    _queueJobs.addAll(jobs.map((e) => _Job(job: e)));
-    if (jobs.isNotEmpty) {
-      startNextJob();
-    }
-  }
+    required this.limit,
+    required List<JobFunction<T>> jobs,
+  }) : _queueJobs = jobs;
 
   void startNextJob() {
     if (_currentRunningJobs < limit && _queueJobs.isNotEmpty) {
+      final index = _currentRunningJobs;
       _currentRunningJobs++;
-      _queueJobs.removeAt(0).job().then((value) {
-        if (!_completer.isCompleted) throw 'unexpected: Should not have any pending job if already complete';
-        _results.add(value);
+      final job = _queueJobs.removeAt(0);
+
+      job().then((value) {
+        if (_completer.isCompleted) throw 'unexpected: Should not have any pending job if already complete';
+        _results[index] = value;
         _currentRunningJobs--;
         startNextJob();
       });
@@ -35,7 +29,10 @@ class Queue<T> {
         startNextJob();
       }
     } else if (_currentRunningJobs == 0 && _queueJobs.isEmpty && !_completer.isCompleted) {
-      _completer.complete(_results);
+      /// trigger complete
+      final entries = _results.entries.toList();
+      entries.sort((a, b) => a.key - b.key);
+      _completer.complete(entries.map((e) => e.value).toList(growable: false));
     }
   }
 
@@ -50,7 +47,12 @@ class _Job<T> {
 
 typedef JobFunction<T> = Future<T> Function();
 
-Future<List<T>> queue<T>(int limit, Iterable<JobFunction<T>> jobs) => Queue(
-      limit: limit,
-      jobs: jobs,
-    ).results;
+Future<List<T>> queue<T>(int limit, Iterable<JobFunction<T>> jobs) async {
+  if (jobs.isEmpty) return [];
+  final q = Queue<T>(
+    limit: limit,
+    jobs: jobs.toList(),
+  );
+  q.startNextJob();
+  return q.results;
+}
