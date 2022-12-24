@@ -39,12 +39,6 @@ class Queue<T> {
   Future<List<T>> get results => _completer.future;
 }
 
-class _Job<T> {
-  final JobFunction<T> job;
-
-  _Job({required this.job});
-}
-
 typedef JobFunction<T> = Future<T> Function();
 
 Future<List<T>> queue<T>(int limit, Iterable<JobFunction<T>> jobs) async {
