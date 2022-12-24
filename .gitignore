@@ -1,0 +1,37 @@
+# FOLDERS
+**/node_modules
+**/build
+**/js_build
+**/.cache
+**/.build
+**/.dart_tool
+**/.firebase
+**/.idea
+**/cmake-build-debug
+**/secrets
+local
+# **.code-workspace
+\.DS_Store
+
+
+# FILE EXT
+**/*.log
+**/*.iml
+**/*.tsv
+**/*.DS_Store
+**/*.cache
+**/.packages
+**/*.lock
+
+# SPECIFIC FILE
+**/out
+**/package-lock.json
+
+# C++
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/Makefile
+**/CMakeFiles/
+
+
+
