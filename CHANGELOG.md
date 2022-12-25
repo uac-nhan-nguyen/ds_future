@@ -1,3 +1,7 @@
+## 1.0.3
+
+- fix Queue results
+
 ## 1.0.2
 
 - update waitUntil to run once 
