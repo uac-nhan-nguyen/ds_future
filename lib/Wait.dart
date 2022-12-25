@@ -10,21 +10,25 @@ Future<T> waitUntil<T>({
 
   bool isInProcess = false;
 
-  Timer.periodic(Duration(milliseconds: intervalMilliseconds), (timer) async {
-    if (completer.isCompleted) {
-      timer.cancel();
-      return;
-    }
+  await process(completer);
 
-    if (isInProcess) return;
-    isInProcess = true;
+  if (!completer.isCompleted){
+    Timer.periodic(Duration(milliseconds: intervalMilliseconds), (timer) async {
+      if (completer.isCompleted) {
+        timer.cancel();
+        return;
+      }
 
-    await process(completer);
+      if (isInProcess) return;
+      isInProcess = true;
+
+      await process(completer);
 
 
-    isInProcess = false;
-  });
+      isInProcess = false;
+    });
 
+  }
   return completer.future;
 }
 

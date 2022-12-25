@@ -3,6 +3,7 @@ import 'dart:async';
 class Queue<T> {
   final int limit;
   int _currentRunningJobs = 0;
+  int _count = 0;
   final List<JobFunction<T>> _queueJobs;
   final Completer<List<T>> _completer = Completer();
   final Map<int, T> _results = {};
@@ -14,7 +15,7 @@ class Queue<T> {
 
   void startNextJob() {
     if (_currentRunningJobs < limit && _queueJobs.isNotEmpty) {
-      final index = _currentRunningJobs;
+      final index = _count++;
       _currentRunningJobs++;
       final job = _queueJobs.removeAt(0);
 
