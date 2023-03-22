@@ -25,10 +25,12 @@ class Queue<T> {
         _currentRunningJobs--;
         startNextJob();
       }).catchError((e) {
-        _completer.completeError({
-          'Code': 'QueueException',
-          'Error': e,
-        });
+        if (!_completer.isCompleted){
+          _completer.completeError({
+            'Code': 'QueueException',
+            'Error': e,
+          });
+        }
       });
       if (!_completer.isCompleted && _currentRunningJobs < limit) {
         startNextJob();

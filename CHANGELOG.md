@@ -1,3 +1,7 @@
+## 1.0.5
+
+- Handle Queue with multiple exceptions
+
 ## 1.0.4
 
 - Handle Queue exception

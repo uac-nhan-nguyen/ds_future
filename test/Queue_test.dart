@@ -18,6 +18,10 @@ main() {
     expect(queue(1, [1].map((e) => () async {
       throw 'Exception message';
     })), throwsA(equals({'Code': 'QueueException', 'Error': 'Exception message'})));
+
+    expect(queue(2, [1, 2].map((e) => () async {
+      throw 'Exception message ${e}';
+    })), throwsA(equals({'Code': 'QueueException', 'Error': 'Exception message 1'})));
   });
 
   group('results order', () {
