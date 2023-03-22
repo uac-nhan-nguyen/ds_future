@@ -14,6 +14,12 @@ main() {
 
   });
 
+  test('Exception job', () async {
+    expect(queue(1, [1].map((e) => () async {
+      throw 'Exception message';
+    })), throwsA(equals({'Code': 'QueueException', 'Error': 'Exception message'})));
+  });
+
   group('results order', () {
     test('simple order', () async {
       final done = [];

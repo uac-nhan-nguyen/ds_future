@@ -24,9 +24,13 @@ class Queue<T> {
         _results[index] = value;
         _currentRunningJobs--;
         startNextJob();
+      }).catchError((e) {
+        _completer.completeError({
+          'Code': 'QueueException',
+          'Error': e,
+        });
       });
-
-      if (_currentRunningJobs < limit) {
+      if (!_completer.isCompleted && _currentRunningJobs < limit) {
         startNextJob();
       }
     } else if (_currentRunningJobs == 0 && _queueJobs.isEmpty && !_completer.isCompleted) {
@@ -49,5 +53,5 @@ Future<List<T>> queue<T>(int limit, Iterable<JobFunction<T>> jobs) async {
     jobs: jobs.toList(),
   );
   q.startNextJob();
-  return q.results;
+  return await q.results;
 }
