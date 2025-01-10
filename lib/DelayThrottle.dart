@@ -1,4 +1,4 @@
-import 'dart:async';
+part of 'ds_future.dart';
 
 class DelayThrottle {
   final int _duration;

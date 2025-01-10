@@ -1,4 +1,4 @@
-import 'dart:async';
+part of 'ds_future.dart';
 
 class Queue<T> {
   final int limit;
@@ -25,7 +25,7 @@ class Queue<T> {
         _currentRunningJobs--;
         startNextJob();
       }).catchError((e) {
-        if (!_completer.isCompleted){
+        if (!_completer.isCompleted) {
           _completer.completeError({
             'Code': 'QueueException',
             'Error': e,
@@ -56,4 +56,16 @@ Future<List<T>> queue<T>(int limit, Iterable<JobFunction<T>> jobs) async {
   );
   q.startNextJob();
   return await q.results;
+}
+
+extension ListQueueExtension<T> on List<T> {
+  queue<K>(int limit, Future<K> Function(T item) handler) async {
+    if (isEmpty) return [];
+    final q = Queue<K>(
+      limit: limit,
+      jobs: map((item) => () async => await handler(item)).toList(),
+    );
+    q.startNextJob();
+    return await q.results;
+  }
 }

@@ -1,6 +1,4 @@
-library wait;
-
-import 'dart:async';
+part of 'ds_future.dart';
 
 Future<T> waitUntil<T>({
   required int intervalMilliseconds,
